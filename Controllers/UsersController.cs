@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Project3_WebAPIadmin.DTOs;
 using Project3_WebAPIadmin.DTOS;
 using Project3_WebAPIadmin.Repositories;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,15 +30,27 @@ namespace Project3_WebAPIadmin.Controllers
         }
 
         // GET: api/<UsersController>
+        /// <summary>
+        /// Lay List Cac User
+        /// </summary>
+        /// <param name="userFilter"></param>
+        /// <param name="paginationFilter"></param>
+        /// <param name="TenantId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("")]
-        public async Task<IActionResult> GetListUser([FromQuery] UserFilter userFilter, [FromQuery] PaginationFilter paginationFilter, [FromQuery] int TenantId)
+        public async Task<IActionResult> GetListUser([FromQuery] UserFilter userFilter, [FromQuery] PaginationFilter paginationFilter, [FromQuery] int? TenantId)
         {
             var response = await _userService.getListUser(userFilter, paginationFilter, TenantId);
             return Ok(response);
         }
 
-        // GET api/<UsersController>/5
+        // GET api/<UsersController>/:UserId
+        /// <summary>
+        /// Lay User By Id
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{UserId}")]
         public IActionResult ViewUser([FromRoute] int UserId)
@@ -46,7 +59,27 @@ namespace Project3_WebAPIadmin.Controllers
             return Ok(response);
         }
 
+        // GET: api/<UsersController>/Tenant/:UserId
+        /// <summary>
+        /// Lay Tenant Cua UserId do
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("Tenant/{UserId}")]
+        public IActionResult GetTenant([FromRoute] int UserId)
+        {
+            var response = _userService.getTenantByUserId(UserId);
+            return Ok(response);
+        }
+
         // POST api/<UsersController>
+        /// <summary>
+        /// Them User
+        /// </summary>
+        /// <param name="TenantId"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("")]
         public IActionResult AddUser([FromQuery] int TenantId, [FromBody] CreateUserModal user)
@@ -67,6 +100,12 @@ namespace Project3_WebAPIadmin.Controllers
         }
 
         // PUT api/<UsersController>/5
+        /// <summary>
+        /// Edit User
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("{UserId}")]
         public IActionResult EditUser([FromRoute] int UserId, [FromBody] CreateUserModal user)
@@ -84,11 +123,69 @@ namespace Project3_WebAPIadmin.Controllers
             }
             return Ok(res);
         }
+        /// <summary>
+        /// Set Status cua User
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="isEnable"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("status/{UserId}")]
+        public IActionResult SetUserStatus([FromRoute] int UserId,[FromBody] IsEnabled isEnable)
+        {
+            var respone = _userService.SetUserStatus(UserId, isEnable);
+            return Ok(respone);
+        }
+
+        /// <summary>
+        /// AssignUserToTenant
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("Tenant")]
+        public IActionResult AssignUserToTenant([FromBody] AssignUserToTenant data )
+        {
+            var respone = _userService.AssignUserToTenant(data.TenantId, data.UserId, data.action);
+            return Ok(respone);
+        }
+
+        /// <summary>
+        /// AssignRoleToUser
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("Role")]
+        public IActionResult AssignRoleToUser([FromBody] AssignRoleToUser data)
+        {
+            var respone = _userService.AssignRoleToUser(data.UserId, data.RoleId, data.action);
+            return Ok(respone);
+        }
+
+        /// <summary>
+        /// VerifyRight cua User
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="RightId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("VerifyRight")]
+        public async Task<IActionResult> VerifyUserRight([FromQuery] int UserId, [FromQuery] int RightId)
+        {
+            var respone = await _userService.VerifyUserRight(UserId, RightId);
+            return Ok(respone);
+        }
 
         // DELETE api/<UsersController>/5
+        /// <summary>
+        /// Delete User by Id
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("{UserId}")]
-        public IActionResult deleteUser([FromRoute] int UserId)
+        public IActionResult DeleteUser([FromRoute] int UserId)
         {
             int deleteRs = _userService.deleteUser(UserId);
             BaseResponse<string> res = new BaseResponse<string>();

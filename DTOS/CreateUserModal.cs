@@ -15,6 +15,6 @@ namespace Project3_WebAPIadmin.DTOS
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         public bool IsEnabled { get; set; }
 
-        public List<int> RoleIds{ get; set; }
+        public List<int> RoleIds { get; set; }
     }
 }

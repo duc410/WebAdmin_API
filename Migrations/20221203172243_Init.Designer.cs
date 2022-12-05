@@ -9,7 +9,7 @@ using Project3_WebAPIadmin.Models;
 namespace Project3_WebAPIadmin.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    [Migration("20221112030309_Init")]
+    [Migration("20221203172243_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
